@@ -1,0 +1,36 @@
+<mat-toolbar color="primary" class="flex justify-between">
+    <div>
+      <span class="mr-4">Expense Management</span>
+      @if (currentUser$ | async; as user) {
+        <button mat-button routerLink="/main/trips">
+          <mat-icon>list</mat-icon>
+          Trips
+        </button>
+        
+        @if (user.role === UserRole.APPROVER) {
+          <button mat-button routerLink="/main/approvals">
+            <mat-icon>approval</mat-icon>
+            Approvals
+          </button>
+        }
+        
+        @if (user.role === UserRole.FINANCE) {
+          <button mat-button routerLink="/main/finance">
+            <mat-icon>attach_money</mat-icon>
+            Finance
+          </button>
+        }
+      }
+    </div>
+    
+    @if (currentUser$ | async) {
+      <button mat-button (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    }
+  </mat-toolbar>
+
+  <div class="container mx-auto p-4">
+    <router-outlet></router-outlet>
+  </div>
