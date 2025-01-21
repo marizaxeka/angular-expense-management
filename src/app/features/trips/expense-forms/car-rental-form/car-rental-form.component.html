@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>{{ dialogTitle }}</h2>
+    <mat-dialog-content>
+      <form [formGroup]="carRentalForm" class="space-y-4">
+        <mat-form-field class="w-full">
+          <mat-label>Car Name</mat-label>
+          <input matInput formControlName="carName" required>
+        </mat-form-field>
+
+        <div class="grid grid-cols-2 gap-4">
+          <mat-form-field>
+            <mat-label>Pick-up Date/Time</mat-label>
+            <input matInput formControlName="pickupDateTime" 
+                   [matDatepicker]="pickupPicker" required>
+            <mat-datepicker-toggle matSuffix [for]="pickupPicker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #pickupPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Drop-off Date/Time</mat-label>
+            <input matInput formControlName="dropoffDateTime" 
+                   [matDatepicker]="dropoffPicker" required>
+            <mat-datepicker-toggle matSuffix [for]="dropoffPicker">
+            </mat-datepicker-toggle>
+            <mat-datepicker #dropoffPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field class="w-full">
+          <mat-label>Pick-up Location</mat-label>
+          <input matInput formControlName="pickupLocation" required>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Drop-off Location</mat-label>
+          <input matInput formControlName="dropoffLocation" required>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Total Price</mat-label>
+          <input matInput type="number" formControlName="totalPrice" required>
+          <span matPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancel</button>
+      <button mat-raised-button color="primary" 
+              [disabled]="carRentalForm.invalid"
+              (click)="submit()">
+              {{submitButtonText}}
+            </button>
+    </mat-dialog-actions>

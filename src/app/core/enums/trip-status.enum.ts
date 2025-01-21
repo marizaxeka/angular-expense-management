@@ -1,5 +1,6 @@
 export enum TripStatus {
-    PENDING = 'PENDING',
-    APPROVED = 'APPROVED',
-    REJECTED = 'REJECTED',
+  DRAFT = 'DRAFT', 
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
   }

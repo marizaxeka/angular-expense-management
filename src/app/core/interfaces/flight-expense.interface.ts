@@ -1,7 +1,12 @@
 import { ExpenseType } from "../enums/expense-type.enum";
 
 export interface FlightExpense  {
-  type: ExpenseType;
+  id: string;
+  tripId: string;
+  type: ExpenseType.FLIGHT;
+  totalPrice: number;
+  createdAt: Date;
+  updatedAt: Date;
   airline: string;
   from: string;
   to: string;

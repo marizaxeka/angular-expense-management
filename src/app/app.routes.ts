@@ -36,6 +36,11 @@ export const routes: Routes = [
               loadComponent: () =>
                 import('./features/trips/trip-form/trip-form.component').then(m => m.TripFormComponent)
             },
+            {  // Add this route for trip details
+                path: ':id',
+                loadComponent: () =>
+                  import('./features/trips/trip-detail-view/trip-detail-view.component').then(m => m.TripDetailViewComponent)
+              }
           ]
         },
         {
@@ -52,7 +57,7 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () =>
-                import('./features/approval/trip-detail-view/trip-detail-view.component').then(m => m.TripDetailViewComponent)
+                import('./features/trips/trip-detail-view/trip-detail-view.component').then(m => m.TripDetailViewComponent)
             }
           ]
         },

@@ -1,0 +1,55 @@
+<h2 mat-dialog-title>{{ dialogTitle }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="flightForm" class="space-y-4">
+    <mat-form-field class="w-full">
+      <mat-label>Airline</mat-label>
+      <input matInput formControlName="airline" required>
+    </mat-form-field>
+
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field>
+        <mat-label>From</mat-label>
+        <input matInput formControlName="from" required>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>To</mat-label>
+        <input matInput formControlName="to" required>
+      </mat-form-field>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <mat-form-field>
+        <mat-label>Departure Date/Time</mat-label>
+        <input matInput formControlName="departureDateTime" 
+               [matDatepicker]="departurePicker" required>
+        <mat-datepicker-toggle matSuffix [for]="departurePicker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #departurePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Arrival Date/Time</mat-label>
+        <input matInput formControlName="arrivalDateTime" 
+               [matDatepicker]="arrivalPicker" required>
+        <mat-datepicker-toggle matSuffix [for]="arrivalPicker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #arrivalPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="w-full">
+      <mat-label>Total Price</mat-label>
+      <input matInput type="number" formControlName="totalPrice" required>
+      <span matPrefix>$&nbsp;</span>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" 
+          [disabled]="flightForm.invalid"
+          (click)="submit()">
+          {{submitButtonText}}
+        </button>
+</mat-dialog-actions>

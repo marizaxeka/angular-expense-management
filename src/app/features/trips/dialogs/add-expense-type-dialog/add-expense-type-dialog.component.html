@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Select Expense Type</h2>
+<mat-dialog-content>
+  <div class="grid grid-cols-2 gap-4 p-4">
+    <button mat-raised-button
+            *ngFor="let type of expenseTypes"
+            (click)="selectType(type)"
+            class="p-4 h-auto">
+      <mat-icon class="text-3xl mb-2">{{getIconForType(type)}}</mat-icon>
+      <div>{{type}}</div>
+    </button>
+  </div>
+</mat-dialog-content>
