@@ -1,0 +1,82 @@
+@import "../../../app.component.scss";
+
+.page-not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  margin: 5vh auto;
+  max-width: 1000px;
+}
+
+h1 {
+  font-size: 6em;
+  margin: 0;
+  color: rgb(5 150 105);
+  font-weight: bold;
+}
+
+p {
+  font-size: 1.4em;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+button {
+  padding: 10px 30px;
+  font-size: 1.1em;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  outline: none;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.error-number {
+  display: flex;
+  justify-content: center;
+  font-size: 6em;
+  margin-bottom: 20px;
+}
+
+.error-number span {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.error-number span:nth-child(1) {
+  transform: translateY(-5px) rotate(-10deg);
+}
+
+.error-number span:nth-child(2) {
+  transform: translateY(5px) scale(1.1);
+  color: red;
+}
+
+.error-number span:nth-child(3) {
+  transform: translateY(-5px) rotate(10deg);
+}
+
+.error-number span:hover {
+  transform: scale(1.2);
+}
+
+
