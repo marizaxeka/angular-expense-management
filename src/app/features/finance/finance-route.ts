@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { FinanceDashboardComponent } from './finance-dashboard/finance-dashboard.component';
+import { FinanceViewComponent } from './finance-view/finance-view.component';
 
 export const FINANCE_ROUTES: Routes = [
-  { path: '', component: FinanceDashboardComponent }
+  { path: '', component: FinanceViewComponent }
 ]
