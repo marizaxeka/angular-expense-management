@@ -1,0 +1,99 @@
+<mat-table [dataSource]="data" class="w-full">
+  <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
+    <mat-header-cell *matHeaderCellDef>{{ col.header }}</mat-header-cell>
+    <mat-cell *matCellDef="let item">
+      <ng-container [ngSwitch]="col.type">
+        <ng-container *ngSwitchCase="'dateRange'">
+          {{ item.startDate | date }} - {{ item.endDate | date }} ({{
+            item.duration
+          }}
+          days)
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'currency'">
+          {{ calculateTotalFn(item) | currency }}
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'status'">
+          <span [class]="getStatusClass(item[col.key])">
+            {{ item[col.key] }}
+          </span>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'action'">
+          <!-- End User Actions -->
+          @if (userRole === 'END_USER') {
+          <div class="flex gap-2">
+            <button
+              mat-icon-button
+              [routerLink]="['/trips', item.id]"
+              matTooltip="View Details"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+            @if (item.status === 'DRAFT') {
+            <button
+              mat-icon-button
+              (click)="sendForApproval.emit(item)"
+              matTooltip="Send for Approval"
+            >
+              <mat-icon>send</mat-icon>
+            </button>
+            }
+          </div>
+          } @if (userRole === 'APPROVER') { @if (item.status === 'PENDING') {
+          <div class="flex gap-2">
+            <button
+              mat-icon-button
+              [routerLink]="['/approvals', item.id]"
+              matTooltip="View Details"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </div>
+          } } @if (userRole === 'FINANCE') { @if (!item.refundStatus) {
+          <div class="flex gap-2">
+            <button
+              mat-icon-button
+              (click)="
+                updateRefundStatus.emit({
+                  trip: item,
+                  status: RefundStatus.IN_PROCESS
+                })
+              "
+              matTooltip="Mark as In Process"
+            >
+              <mat-icon>pending</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              (click)="
+                updateRefundStatus.emit({
+                  trip: item,
+                  status: RefundStatus.REFUNDED
+                })
+              "
+              matTooltip="Mark as Refunded"
+            >
+              <mat-icon>done_all</mat-icon>
+            </button>
+          </div>
+          } @else {
+          <div class="flex items-center">
+            <mat-icon [ngClass]="getStatusClassFn(item.refundStatus)">
+              {{ getStatusIconFn(item.refundStatus) }}
+            </mat-icon>
+            <span class="ml-2">{{ item.refundStatus }}</span>
+          </div>
+          } }
+        </ng-container>
+
+        <ng-container *ngSwitchDefault>
+          {{ item[col.key] }}
+        </ng-container>
+      </ng-container>
+    </mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="columnKeys"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: columnKeys"></mat-row>
+</mat-table>

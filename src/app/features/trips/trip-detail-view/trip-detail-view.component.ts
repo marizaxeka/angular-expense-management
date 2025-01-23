@@ -16,7 +16,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HotelFormComponent } from '../expense-forms/hotel-form/hotel-form.component';
 import { FlightFormComponent } from '../expense-forms/flight-form/flight-form.component';
 import { TaxiFormComponent } from '../expense-forms/taxi-form/taxi-form.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ExpensesComponent } from '../../../shared/components/expenses/expenses.component';
 
 @Component({
@@ -46,7 +46,9 @@ export class TripDetailViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private tripService: TripService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    
   ) {}
 
   ngOnInit(): void {
@@ -191,12 +193,27 @@ export class TripDetailViewComponent implements OnInit {
   }
 
   sendForApproval(): void {
-    if (this.trip) {
-      this.tripService
-        .updateTripStatus(this.trip.id, TripStatus.PENDING)
-        .subscribe((updatedTrip) => {
-          this.trip = updatedTrip;
-        });
+    if (!this.trip || this.trip.expenses.length === 0) {
+      this.snackBar.open(
+        'Cannot send a trip for approval without expenses.',
+        'Close',
+        {
+          duration: 3000,
+          verticalPosition: 'top', // Optional: Adjust position as needed
+        }
+      );
+      return;
     }
+    this.tripService
+      .updateTripStatus(this.trip.id, TripStatus.PENDING)
+      .subscribe({
+        next: (updatedTrip) => {
+          this.trip = updatedTrip;
+        },
+        error: (error) => {
+          console.error('Failed to send trip for approval:', error);
+        },
+      });
   }
+  
 }
