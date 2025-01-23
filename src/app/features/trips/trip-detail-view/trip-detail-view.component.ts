@@ -18,6 +18,7 @@ import { FlightFormComponent } from '../expense-forms/flight-form/flight-form.co
 import { TaxiFormComponent } from '../expense-forms/taxi-form/taxi-form.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ExpensesComponent } from '../../../shared/components/expenses/expenses.component';
+import { switchMap, take } from 'rxjs';
 
 @Component({
   selector: 'app-trip-detail-view',
@@ -47,8 +48,7 @@ export class TripDetailViewComponent implements OnInit {
     private route: ActivatedRoute,
     private tripService: TripService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -159,35 +159,68 @@ export class TripDetailViewComponent implements OnInit {
     };
 
     if (!componentMap[expense.type]) return;
-    const dialogRef = this.dialog.open(
-      componentMap[expense.type],
-      dialogConfig
-    );
-    dialogRef.afterClosed().subscribe((updatedExpenseData) => {
-      if (updatedExpenseData && this.trip) {
-        this.tripService
-          .updateExpense(this.trip.id, expense.id, {
-            ...updatedExpenseData,
-            type: expense.type,
-          })
-          .subscribe({
-            next: (updatedTrip) => {
-              this.trip = updatedTrip;
-            },
-            error: (error) => {
-              console.error('Failed to update expense:', error);
-            },
-          });
-      }
-    });
-  }
 
+    this.dialog
+      .open(componentMap[expense.type], dialogConfig)
+      .afterClosed()
+      .pipe(
+        take(1),
+        switchMap((updatedExpenseData) => {
+          if (updatedExpenseData && this.trip) {
+            return this.tripService.updateExpense(this.trip.id, expense.id, {
+              ...updatedExpenseData,
+              type: expense.type,
+            });
+          }
+          return [];
+        }),
+        take(1)
+      )
+      .subscribe({
+        next: (updatedTrip) => {
+          if (updatedTrip) {
+            this.trip = updatedTrip;
+            this.snackBar.open('Expense updated successfully!', 'Close', {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            });
+          }
+        },
+        error: (error) => {
+          this.snackBar.open(
+            'Failed to update expense. Please try again.',
+            'Close',
+            {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            }
+          );
+        },
+      });
+  }
   deleteExpense(expense: any): void {
-    if (confirm('Are you sure you want to delete this expense?') && this.trip) {
+    if (this.trip) {
       this.tripService
         .deleteExpense(this.trip.id, expense.id)
-        .subscribe((updatedTrip) => {
-          this.trip = updatedTrip;
+        .pipe(take(1))
+        .subscribe({
+          next: (updatedTrip) => {
+            this.trip = updatedTrip;
+            this.snackBar.open('Expense deleted successfully!', 'Close', {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            });
+          },
+          error: () => {
+            this.snackBar.open(
+              'Failed to delete expense. Please try again.',
+              'Close',
+              {
+                duration: 3000,
+                verticalPosition: 'bottom',
+              }
+            );
+          },
         });
     }
   }
@@ -199,21 +232,34 @@ export class TripDetailViewComponent implements OnInit {
         'Close',
         {
           duration: 3000,
-          verticalPosition: 'top', // Optional: Adjust position as needed
+          verticalPosition: 'bottom',
         }
       );
       return;
     }
+
     this.tripService
       .updateTripStatus(this.trip.id, TripStatus.PENDING)
+      .pipe(take(1))
       .subscribe({
         next: (updatedTrip) => {
           this.trip = updatedTrip;
+          this.snackBar.open('Trip sent for approval successfully!', 'Close', {
+            duration: 3000,
+            verticalPosition: 'bottom',
+          });
         },
         error: (error) => {
           console.error('Failed to send trip for approval:', error);
+          this.snackBar.open(
+            'Failed to send trip for approval. Please try again.',
+            'Close',
+            {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            }
+          );
         },
       });
   }
-  
 }

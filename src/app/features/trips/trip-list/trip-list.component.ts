@@ -8,6 +8,7 @@ import { TripStatus } from '../../../core/enums/trip-status.enum';
 import { MatSnackBar,  } from '@angular/material/snack-bar';
 import { DataTableComponent } from '../../../shared/components/data-table/data-table/data-table.component';
 import { TableColumn } from '../../../shared/components/data-table/table-config.interface.ts/table-column.interface';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-trip-list',
@@ -88,12 +89,9 @@ export class TripListComponent {
       next: (trips) => {
         this.trips = trips;
       },
-      error: () => {
-        this.snackBar.open('Failed to load trips', 'Close', { duration: 3000 });
-      },
     });
   }
-
+  
   sendForApproval(trip: Trip): void {
     if (trip.expenses.length === 0) {
       this.snackBar.open('Cannot submit a trip without expenses', 'Close', {
@@ -101,24 +99,27 @@ export class TripListComponent {
       });
       return;
     }
-    this.tripService.updateTripStatus(trip.id, TripStatus.PENDING).subscribe({
-      next: (updatedTrip) => {
-        const index = this.trips.findIndex((t) => t.id === trip.id);
-        if (index !== -1) {
-          this.trips[index] = updatedTrip;
-          this.trips = [...this.trips];
-        }
-        this.snackBar.open('Trip sent for approval successfully', 'Close', {
-          duration: 3000,
-        });
-      },
-      error: () => {
-        this.snackBar.open('Failed to send trip for approval', 'Close', {
-          duration: 3000,
-        });
-      },
-    });
-  }
+    this.tripService
+      .updateTripStatus(trip.id, TripStatus.PENDING)
+      .pipe(take(1))
+      .subscribe({
+        next: (updatedTrip) => {
+          const index = this.trips.findIndex((t) => t.id === trip.id);
+          if (index !== -1) {
+            this.trips[index] = updatedTrip;
+            this.trips = [...this.trips]; 
+          }
+          this.snackBar.open('Trip sent for approval successfully', 'Close', {
+            duration: 3000,
+          });
+        },
+        error: () => {
+          this.snackBar.open('Failed to send trip for approval', 'Close', {
+            duration: 3000,
+          });
+        },
+      });
+  }  
 
   getStatusClass = (status: string): string => {
     const tripStatus = status as TripStatus;

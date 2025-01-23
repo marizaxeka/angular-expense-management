@@ -8,6 +8,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-trip-form',
@@ -29,7 +31,8 @@ export class TripFormComponent {
   constructor(
     private fb: FormBuilder,
     private tripService: TripService,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {
     this.tripForm = this.fb.group({
       name: ['', Validators.required],
@@ -42,14 +45,29 @@ export class TripFormComponent {
     if (this.tripForm.valid) {
       const { startDate, endDate } = this.tripForm.value;
       const duration = this.calculateDuration(startDate!, endDate!);
-      this.tripService.createTrip({
-        ...this.tripForm.value,
-        duration,
-        status: 'DRAFT',
-        expenses: []
-      }).subscribe({
-        next: () => this.router.navigate(['/trips'])
-      });
+      this.tripService
+        .createTrip({
+          ...this.tripForm.value,
+          duration,
+          status: 'DRAFT',
+          expenses: [],
+        })
+        .pipe(take(1))
+        .subscribe({
+          next: () => {
+            this.snackBar.open('Trip created successfully!', 'Close', {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            });
+            this.router.navigate(['/trips']);
+          },
+          error: () => {
+            this.snackBar.open('Failed to create trip. Please try again.', 'Close', {
+              duration: 3000,
+              verticalPosition: 'bottom',
+            });
+          },
+        });
     }
   }
 
