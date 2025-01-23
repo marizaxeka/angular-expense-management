@@ -48,7 +48,7 @@ export class TripFormComponent {
         status: 'DRAFT',
         expenses: []
       }).subscribe({
-        next: () => this.router.navigate(['/main/trips'])
+        next: () => this.router.navigate(['/trips'])
       });
     }
   }

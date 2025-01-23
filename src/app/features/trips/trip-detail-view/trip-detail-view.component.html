@@ -1,13 +1,10 @@
 <div class="p-6" *ngIf="trip">
-  <!-- Header -->
   <div class="flex justify-between items-center mb-6">
     <div>
       <h1 class="text-2xl font-bold mb-2">{{ trip.name }}</h1>
       <div class="text-gray-600">
-        {{ trip.startDate | date }} - {{ trip.endDate | date }} ({{
-          trip.duration
-        }}
-        days)
+        {{ trip.startDate | date }} - {{ trip.endDate | date }} 
+        ({{ trip.duration }} days)
       </div>
     </div>
 
@@ -19,8 +16,7 @@
           'bg-green-100 text-green-800': trip.status === TripStatus.APPROVED,
           'bg-red-100 text-red-800': trip.status === TripStatus.REJECTED,
           'bg-gray-100 text-gray-800': trip.status === TripStatus.DRAFT
-        }"
-      >
+        }">
         {{ trip.status }}
       </span>
 
@@ -28,257 +24,17 @@
         *ngIf="trip.status === TripStatus.DRAFT"
         mat-raised-button
         color="primary"
-        (click)="sendForApproval()"
-      >
+        (click)="sendForApproval()">
         <mat-icon>send</mat-icon>
         Send for Approval
       </button>
     </div>
   </div>
-
-  <!-- Expenses Section -->
-  <mat-card>
-    <div class="p-4">
-      <div class="flex justify-between mb-4">
-        <span class="text-xl font-bold">Expenses</span>
-        <button
-          mat-raised-button
-          color="primary"
-          class="ml-4"
-          [disabled]="trip.status !== TripStatus.DRAFT"
-          (click)="openAddExpenseDialog()"
-        >
-          <mat-icon class="mr-2">add</mat-icon>
-          Add Expense
-        </button>
-      </div>
-    </div>
-    <mat-card-content class="mt-4">
-      <mat-tab-group>
-        <mat-tab label="All">
-          <ng-container
-            *ngTemplateOutlet="
-              expensesList;
-              context: { expenses: trip.expenses }
-            "
-          >
-          </ng-container>
-        </mat-tab>
-        <mat-tab label="Car Rental">
-          <ng-container
-            *ngTemplateOutlet="
-              expensesList;
-              context: {
-                expenses: trip.expenses | filterByType : ExpenseType.CAR_RENTAL
-              }
-            "
-          ></ng-container>
-        </mat-tab>
-        <mat-tab label="Hotel">
-          <ng-container
-            *ngTemplateOutlet="
-              expensesList;
-              context: {
-                expenses: trip.expenses | filterByType : ExpenseType.HOTEL
-              }
-            "
-          ></ng-container>
-        </mat-tab>
-        <mat-tab label="Flight">
-          <ng-container
-            *ngTemplateOutlet="
-              expensesList;
-              context: {
-                expenses: trip.expenses | filterByType : ExpenseType.FLIGHT
-              }
-            "
-          ></ng-container>
-        </mat-tab>
-        <mat-tab label="Taxi">
-          <ng-container
-            *ngTemplateOutlet="
-              expensesList;
-              context: {
-                expenses: trip.expenses | filterByType : ExpenseType.TAXI
-              }
-            "
-          ></ng-container>
-        </mat-tab>
-      </mat-tab-group>
-
-      <!-- Expenses List Template -->
-      <ng-template #expensesList let-expenses="expenses">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-          <mat-card *ngFor="let expense of expenses">
-            <mat-card-header>
-              <mat-icon mat-card-avatar>
-                {{ getExpenseIcon(expense.type) }}
-              </mat-icon>
-              <mat-card-title>{{ getExpenseTitle(expense) }}</mat-card-title>
-              <mat-card-subtitle>{{ expense.type }}</mat-card-subtitle>
-            </mat-card-header>
-
-            <mat-card-content class="mt-4">
-              <!-- Dynamic content based on expense type -->
-              <ng-container [ngSwitch]="expense.type">
-                <!-- Car Rental -->
-                <div *ngSwitchCase="'CAR_RENTAL'">
-                  <p><strong>Car:</strong> {{ expense.carName }}</p>
-                  <p>
-                    <strong>Pick-up:</strong>
-                    {{ expense.pickupDateTime | date : "short" }}
-                  </p>
-                  <p>
-                    <strong>Drop-off:</strong>
-                    {{ expense.dropoffDateTime | date : "short" }}
-                  </p>
-                  <p>
-                    <strong>Location:</strong> {{ expense.pickupLocation }} -
-                    {{ expense.dropoffLocation }}
-                  </p>
-                </div>
-
-                <!-- Hotel -->
-                <div *ngSwitchCase="'HOTEL'">
-                  <p><strong>Hotel:</strong> {{ expense.hotelName }}</p>
-                  <p><strong>Location:</strong> {{ expense.location }}</p>
-                  <p>
-                    <strong>Check-in:</strong> {{ expense.checkInDate | date }}
-                  </p>
-                  <p>
-                    <strong>Check-out:</strong>
-                    {{ expense.checkoutDate | date }}
-                  </p>
-                </div>
-
-                <!-- Flight -->
-                <div *ngSwitchCase="'FLIGHT'">
-                  <p><strong>Airline:</strong> {{ expense.airline }}</p>
-                  <p>
-                    <strong>Route:</strong> {{ expense.from }} -
-                    {{ expense.to }}
-                  </p>
-                  <p>
-                    <strong>Departure:</strong>
-                    {{ expense.departureDateTime | date : "short" }}
-                  </p>
-                  <p>
-                    <strong>Arrival:</strong>
-                    {{ expense.arrivalDateTime | date : "short" }}
-                  </p>
-                </div>
-
-                <!-- Taxi -->
-                <div *ngSwitchCase="'TAXI'">
-                  <p>
-                    <strong>Route:</strong> {{ expense.from }} -
-                    {{ expense.to }}
-                  </p>
-                  <p>
-                    <strong>Time:</strong>
-                    {{ expense.dateTime | date : "short" }}
-                  </p>
-                </div>
-              </ng-container>
-
-              <div class="mt-4 text-xl font-bold text-right">
-                {{ expense.totalPrice | currency }}
-              </div>
-            </mat-card-content>
-
-            <mat-card-actions align="end">
-              <!-- <button mat-icon-button 
-                        (click)="viewExpense(expense)"
-                        matTooltip="View Details">
-                  <mat-icon>visibility</mat-icon>
-                </button> -->
-              <button
-                mat-icon-button
-                *ngIf="trip.status === TripStatus.DRAFT"
-                (click)="editExpense(expense)"
-                matTooltip="Edit"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                *ngIf="trip.status === TripStatus.DRAFT"
-                color="warn"
-                (click)="deleteExpense(expense)"
-                matTooltip="Delete"
-              >
-                <mat-icon>delete</mat-icon>
-              </button>
-            </mat-card-actions>
-          </mat-card>
-        </div>
-      </ng-template>
-    </mat-card-content>
-  </mat-card>
+  <app-expenses
+  [expenses]="trip.expenses"
+  [isDraft]="trip.status === TripStatus.DRAFT"
+  (addExpense)="openAddExpenseDialog()"
+  (editExpense)="editExpense($event)"
+  (deleteExpense)="deleteExpense($event)"
+></app-expenses>
 </div>
-    <!-- Expenses Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <mat-card *ngFor="let expense of trip?.expenses "
-                 class="border-l-4"
-                 [ngClass]="{
-                   'border-blue-500': expense.type === ExpenseType.CAR_RENTAL,
-                   'border-green-500': expense.type === ExpenseType.HOTEL,
-                   'border-purple-500': expense.type === ExpenseType.FLIGHT,
-                   'border-yellow-500': expense.type === ExpenseType.TAXI
-                 }">
-          <div class="p-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <mat-icon>{{getExpenseIcon(expense.type)}}</mat-icon>
-                <div>
-                  <h3 class="font-medium">{{getExpenseTitle(expense)}}</h3>
-                  <span class="text-sm text-gray-600">{{expense.type}}</span>
-                </div>
-              </div>
-              <div>
-                <button mat-icon-button 
-                        matTooltip="Edit"
-                        (click)="editExpense(expense)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button 
-                        color="warn"
-                        matTooltip="Delete"
-                        (click)="deleteExpense(expense)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </div>
-
-            <div class="mt-3 text-gray-600 text-sm">
-              <!-- Car Rental Details -->
-              <ng-container *ngIf="expense.type === ExpenseType.CAR_RENTAL">
-                <p>Pick-up: {{expense.pickupDateTime | date:'short'}}</p>
-                <p>Drop-off: {{expense.dropoffDateTime | date:'short'}}</p>
-                <p>Location: {{expense.pickupLocation}}</p>
-              </ng-container>
-
-              <!-- Hotel Details -->
-              <ng-container *ngIf="expense.type === ExpenseType.HOTEL">
-                <p>Check-in: {{expense.checkInDate| date}}</p>
-                <p>Check-out: {{expense.checkoutDate | date}}</p>
-                <p>Room type: {{expense.hotelName}}</p>
-              </ng-container>
-
-              <!-- Flight Details -->
-              <ng-container *ngIf="expense.type === ExpenseType.FLIGHT">
-                <p>From: {{expense.from}}</p>
-                <p>To: {{expense.to}}</p>
-                <p>Departure: {{expense.departureDateTime| date:'short'}}</p>
-              </ng-container>
-
-              <!-- Taxi Details -->
-              <ng-container *ngIf="expense.type === ExpenseType.TAXI">
-                <p>From: {{expense.from}}</p>
-                <p>To: {{expense.to}}</p>
-                <p>Pick-up time: {{expense.createdAt| date:'short'}}</p>
-              </ng-container>
-            </div>
-          </div>
-        </mat-card>
-      </div>

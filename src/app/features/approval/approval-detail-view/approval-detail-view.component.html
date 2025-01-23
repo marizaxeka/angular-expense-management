@@ -1,0 +1,31 @@
+<div class="p-6" *ngIf="trip">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold mb-2">{{ trip.name }}</h1>
+      <div class="text-gray-600">
+        {{ trip.startDate | date }} - {{ trip.endDate | date }} ({{
+          trip.duration
+        }}
+        days)
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <button mat-raised-button color="warn" (click)="rejectTrip()">
+        <mat-icon>cancel</mat-icon>
+        Reject
+      </button>
+      <button mat-raised-button color="primary" (click)="approveTrip()">
+        <mat-icon>check_circle</mat-icon>
+        Approve
+      </button>
+    </div>
+  </div>
+  <app-expenses
+    [expenses]="trip.expenses"
+    [userRole]="userRole"
+    [approval]="approval"
+    [isPending]="true"
+    >
+  </app-expenses>
+</div>

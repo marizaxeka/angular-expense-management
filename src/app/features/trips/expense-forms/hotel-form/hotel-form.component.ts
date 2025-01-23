@@ -66,8 +66,8 @@ export class HotelFormComponent {
 
   get dialogTitle(): string {
     return this.isEditMode
-      ? 'Edit Car Rental Expense'
-      : 'Add Car Rental Expense';
+      ? 'Edit Hotel Expense'
+      : 'Add Hotel Rental Expense';
   }
 
   get submitButtonText(): string {

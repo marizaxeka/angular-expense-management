@@ -57,8 +57,8 @@ export class TaxiFormComponent {
  
    get dialogTitle(): string {
     return this.isEditMode
-      ? 'Edit Car Rental Expense'
-      : 'Add Car Rental Expense';
+      ? 'Edit Taxi Expense'
+      : 'Add Taxi Expense';
   }
 
   get submitButtonText(): string {

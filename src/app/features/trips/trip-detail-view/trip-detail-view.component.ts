@@ -13,12 +13,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { FilterByTypePipe } from '../../../shared/pipes/filter-by-type.pipe';
 import { HotelFormComponent } from '../expense-forms/hotel-form/hotel-form.component';
 import { FlightFormComponent } from '../expense-forms/flight-form/flight-form.component';
 import { TaxiFormComponent } from '../expense-forms/taxi-form/taxi-form.component';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ExpensesComponent } from '../../../shared/components/expenses/expenses.component';
 
 @Component({
   selector: 'app-trip-detail-view',
@@ -31,30 +30,28 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatCardModule,
     MatDialogModule,
     MatTooltipModule,
-    FilterByTypePipe,
-    MatSnackBarModule
+    MatSnackBarModule,
+    ExpensesComponent,
   ],
   templateUrl: './trip-detail-view.component.html',
-  styleUrl: './trip-detail-view.component.scss'
+  styleUrl: './trip-detail-view.component.scss',
 })
 export class TripDetailViewComponent implements OnInit {
   trip?: Trip;
   TripStatus = TripStatus;
   ExpenseType = ExpenseType;
   selectedType: ExpenseType | null = null;
-  
+
   expenseTypes = Object.values(ExpenseType);
   constructor(
     private route: ActivatedRoute,
     private tripService: TripService,
-    private dialog: MatDialog,
-
+    private dialog: MatDialog
   ) {}
-  
-  
+
   ngOnInit(): void {
     const tripId = this.route.snapshot.params['id'];
-    this.tripService.getTrip(tripId).subscribe(trip => {
+    this.tripService.getTrip(tripId).subscribe((trip) => {
       this.trip = trip;
     });
   }
@@ -64,7 +61,7 @@ export class TripDetailViewComponent implements OnInit {
       [ExpenseType.CAR_RENTAL]: 'border-blue-500',
       [ExpenseType.HOTEL]: 'border-green-500',
       [ExpenseType.FLIGHT]: 'border-purple-500',
-      [ExpenseType.TAXI]: 'border-yellow-500'
+      [ExpenseType.TAXI]: 'border-yellow-500',
     };
     return classes[type] || '';
   }
@@ -101,89 +98,93 @@ export class TripDetailViewComponent implements OnInit {
 
   openAddExpenseDialog(): void {
     const typeDialog = this.dialog.open(AddExpenseTypeDialogComponent);
-    typeDialog.afterClosed().subscribe(type => {
+    typeDialog.afterClosed().subscribe((type) => {
       if (!type) return;
 
       let dialogRef;
       switch (type) {
         case ExpenseType.CAR_RENTAL:
           dialogRef = this.dialog.open(CarRentalFormComponent, {
-            data: { tripId: this.trip?.id }
+            data: { tripId: this.trip?.id },
           });
           break;
-          case ExpenseType.HOTEL:
+        case ExpenseType.HOTEL:
           dialogRef = this.dialog.open(HotelFormComponent, {
-            data: { tripId: this.trip?.id }
+            data: { tripId: this.trip?.id },
           });
           break;
-          case ExpenseType.FLIGHT:
+        case ExpenseType.FLIGHT:
           dialogRef = this.dialog.open(FlightFormComponent, {
-            data: { tripId: this.trip?.id }
+            data: { tripId: this.trip?.id },
           });
           break;
-          case ExpenseType.TAXI:
+        case ExpenseType.TAXI:
           dialogRef = this.dialog.open(TaxiFormComponent, {
-            data: { tripId: this.trip?.id }
+            data: { tripId: this.trip?.id },
           });
           break;
       }
 
-      dialogRef?.afterClosed().subscribe(expenseData => {
+      dialogRef?.afterClosed().subscribe((expenseData) => {
         if (expenseData && this.trip) {
-          this.tripService.addExpense(this.trip.id, {
-            type,
-            ...expenseData
-          }).subscribe(updatedTrip => {
-            this.trip = updatedTrip;
-          });
+          this.tripService
+            .addExpense(this.trip.id, {
+              type,
+              ...expenseData,
+            })
+            .subscribe((updatedTrip) => {
+              this.trip = updatedTrip;
+            });
         }
       });
     });
   }
 
-  editExpense(expense: Expense): void {  
+  editExpense(expense: Expense): void {
     const dialogConfig = {
       data: {
         tripId: this.trip?.id,
-        expense: expense
+        expense: expense,
       },
-      width: '500px'
+      width: '500px',
     };
-  
+
     const componentMap: Record<ExpenseType, any> = {
       [ExpenseType.CAR_RENTAL]: CarRentalFormComponent,
       [ExpenseType.HOTEL]: HotelFormComponent,
       [ExpenseType.FLIGHT]: FlightFormComponent,
-      [ExpenseType.TAXI]: TaxiFormComponent
+      [ExpenseType.TAXI]: TaxiFormComponent,
     };
-  
+
     if (!componentMap[expense.type]) return;
-    const dialogRef = this.dialog.open(componentMap[expense.type], dialogConfig);
-    dialogRef.afterClosed().subscribe(updatedExpenseData => {
+    const dialogRef = this.dialog.open(
+      componentMap[expense.type],
+      dialogConfig
+    );
+    dialogRef.afterClosed().subscribe((updatedExpenseData) => {
       if (updatedExpenseData && this.trip) {
-        this.tripService.updateExpense(
-          this.trip.id,
-          expense.id,
-          {
+        this.tripService
+          .updateExpense(this.trip.id, expense.id, {
             ...updatedExpenseData,
-            type: expense.type
-          }
-        ).subscribe({
-          next: (updatedTrip) => {
-            this.trip = updatedTrip;
-          },
-          error: (error) => {
-            console.error('Failed to update expense:', error);
-          }
-        });
+            type: expense.type,
+          })
+          .subscribe({
+            next: (updatedTrip) => {
+              this.trip = updatedTrip;
+            },
+            error: (error) => {
+              console.error('Failed to update expense:', error);
+            },
+          });
       }
     });
   }
-  
+
   deleteExpense(expense: any): void {
     if (confirm('Are you sure you want to delete this expense?') && this.trip) {
-      this.tripService.deleteExpense(this.trip.id, expense.id)
-        .subscribe(updatedTrip => {
+      this.tripService
+        .deleteExpense(this.trip.id, expense.id)
+        .subscribe((updatedTrip) => {
           this.trip = updatedTrip;
         });
     }
@@ -191,8 +192,9 @@ export class TripDetailViewComponent implements OnInit {
 
   sendForApproval(): void {
     if (this.trip) {
-      this.tripService.updateTripStatus(this.trip.id, TripStatus.PENDING)
-        .subscribe(updatedTrip => {
+      this.tripService
+        .updateTripStatus(this.trip.id, TripStatus.PENDING)
+        .subscribe((updatedTrip) => {
           this.trip = updatedTrip;
         });
     }

@@ -6,25 +6,21 @@
         New Trip
       </button>
     </div>
-  
     <mat-table [dataSource]="trips" class="w-full">
       <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>Trip Name</mat-header-cell>
         <mat-cell *matCellDef="let trip">{{trip.name}}</mat-cell>
       </ng-container>
-  
       <ng-container matColumnDef="dates">
         <mat-header-cell *matHeaderCellDef>Dates</mat-header-cell>
         <mat-cell *matCellDef="let trip">
           {{trip.startDate | date}} - {{trip.endDate | date}}
         </mat-cell>
       </ng-container>
-  
       <ng-container matColumnDef="duration">
         <mat-header-cell *matHeaderCellDef>Duration</mat-header-cell>
         <mat-cell *matCellDef="let trip">{{trip.duration}} days</mat-cell>
       </ng-container>
-  
       <ng-container matColumnDef="status">
         <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
         <mat-cell *matCellDef="let trip">
@@ -42,7 +38,7 @@
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let trip">
             <button mat-icon-button 
-            [routerLink]="['/main/trips', trip.id]" 
+            [routerLink]="['/trips', trip.id]" 
             matTooltip="View Details">
       <mat-icon>visibility</mat-icon>
     </button>

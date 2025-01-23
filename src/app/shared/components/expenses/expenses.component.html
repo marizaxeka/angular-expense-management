@@ -1,0 +1,171 @@
+@if (currentUser$ | async; as user) {
+<mat-card>
+  <div class="p-4">
+    <div class="flex justify-between mb-4">
+      <span class="text-xl font-bold">Expenses</span>
+      <button
+        mat-raised-button
+        color="primary"
+        class="ml-4"
+        [disabled]="!isDraft"
+        (click)="addExpense.emit()"
+      >
+        <mat-icon class="mr-2">add</mat-icon>
+        Add Expense
+      </button>
+    </div>
+  </div>
+  <mat-card-content class="mt-4">
+    <mat-tab-group>
+      <mat-tab label="All">
+        <ng-container
+          *ngTemplateOutlet="expensesList; context: { expenses: expenses }"
+        >
+        </ng-container>
+      </mat-tab>
+      <mat-tab label="Car Rental">
+        <ng-container
+          *ngTemplateOutlet="
+            expensesList;
+            context: {
+              expenses: expenses | filterByType : ExpenseType.CAR_RENTAL
+            }
+          "
+        ></ng-container>
+      </mat-tab>
+      <mat-tab label="Hotel">
+        <ng-container
+          *ngTemplateOutlet="
+            expensesList;
+            context: {
+              expenses: expenses | filterByType : ExpenseType.HOTEL
+            }
+          "
+        ></ng-container>
+      </mat-tab>
+      <mat-tab label="Flight">
+        <ng-container
+          *ngTemplateOutlet="
+            expensesList;
+            context: {
+              expenses: expenses | filterByType : ExpenseType.FLIGHT
+            }
+          "
+        ></ng-container>
+      </mat-tab>
+      <mat-tab label="Taxi">
+        <ng-container
+          *ngTemplateOutlet="
+            expensesList;
+            context: {
+              expenses: expenses | filterByType : ExpenseType.TAXI
+            }
+          "
+        ></ng-container>
+      </mat-tab>
+    </mat-tab-group>
+    <ng-template #expensesList let-expenses="expenses">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        <mat-card *ngFor="let expense of expenses">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>
+              {{ getExpenseIcon(expense.type) }}
+            </mat-icon>
+            <mat-card-title>{{ getExpenseTitle(expense) }}</mat-card-title>
+            <mat-card-subtitle>{{ expense.type }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content class="mt-4">
+            <ng-container [ngSwitch]="expense.type">
+              <div *ngSwitchCase="'CAR_RENTAL'">
+                <p><strong>Car:</strong> {{ expense.carName }}</p>
+                <p>
+                  <strong>Pick-up:</strong>
+                  {{ expense.pickupDateTime | date : "short" }}
+                </p>
+                <p>
+                  <strong>Drop-off:</strong>
+                  {{ expense.dropoffDateTime | date : "short" }}
+                </p>
+                <p>
+                  <strong>Location:</strong> {{ expense.pickupLocation }} -
+                  {{ expense.dropoffLocation }}
+                </p>
+              </div>
+              <div *ngSwitchCase="'HOTEL'">
+                <p><strong>Hotel:</strong> {{ expense.hotelName }}</p>
+                <p><strong>Location:</strong> {{ expense.location }}</p>
+                <p>
+                  <strong>Check-in:</strong> {{ expense.checkInDate | date }}
+                </p>
+                <p>
+                  <strong>Check-out:</strong>
+                  {{ expense.checkoutDate | date }}
+                </p>
+              </div>
+              <div *ngSwitchCase="'FLIGHT'">
+                <p><strong>Airline:</strong> {{ expense.airline }}</p>
+                <p>
+                  <strong>Route:</strong> {{ expense.from }} -
+                  {{ expense.to }}
+                </p>
+                <p>
+                  <strong>Departure:</strong>
+                  {{ expense.departureDateTime | date : "short" }}
+                </p>
+                <p>
+                  <strong>Arrival:</strong>
+                  {{ expense.arrivalDateTime | date : "short" }}
+                </p>
+              </div>
+              <div *ngSwitchCase="'TAXI'">
+                <p>
+                  <strong>Route:</strong> {{ expense.from }} -
+                  {{ expense.to }}
+                </p>
+                <p>
+                  <strong>Time:</strong>
+                  {{ expense.dateTime | date : "short" }}
+                </p>
+              </div>
+            </ng-container>
+            <div class="mt-4 text-xl font-bold text-right">
+              {{ expense.totalPrice | currency }}
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end" *ngIf="isDraft">
+            <button
+              mat-icon-button
+              (click)="editExpense.emit(expense)"
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteExpense.emit(expense)"
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>
+@if (user.role === UserRole.APPROVER) {
+<div class="mt-6">
+  <form [formGroup]="noteForm" (ngSubmit)="addNote()">
+    <div class="flex justify-between">
+      <mat-form-field class="w-2/4">
+        <mat-label>Note</mat-label>
+        <input matInput formControlName="note" [value]="approval?.note || ''" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit">
+        {{ approval?.note ? "Update Note" : "Add Note" }}
+      </button>
+    </div>
+  </form>
+</div>
+} }

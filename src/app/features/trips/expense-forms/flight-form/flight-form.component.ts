@@ -70,8 +70,8 @@ export class FlightFormComponent {
 
   get dialogTitle(): string {
     return this.isEditMode
-      ? 'Edit Car Rental Expense'
-      : 'Add Car Rental Expense';
+      ? 'Edit FLight Expense'
+      : 'Add FLight Expense';
   }
 
   get submitButtonText(): string {
