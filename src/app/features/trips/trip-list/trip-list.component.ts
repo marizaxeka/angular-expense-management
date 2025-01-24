@@ -114,12 +114,7 @@ export class TripListComponent {
           this.snackBar.open('Trip sent for approval successfully', 'Close', {
             duration: 3000,
           });
-        },
-        error: () => {
-          this.snackBar.open('Failed to send trip for approval', 'Close', {
-            duration: 3000,
-          });
-        },
+        }
       });
   }  
 

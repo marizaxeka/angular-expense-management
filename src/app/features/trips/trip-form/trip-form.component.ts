@@ -62,13 +62,7 @@ export class TripFormComponent {
               verticalPosition: 'bottom',
             });
             this.router.navigate(['/trips']);
-          },
-          error: () => {
-            this.snackBar.open('Failed to create trip. Please try again.', 'Close', {
-              duration: 3000,
-              verticalPosition: 'bottom',
-            });
-          },
+          }
         });
     }
   }

@@ -64,11 +64,7 @@ export class LoginComponent {
               this.router.navigate(['/finance']);
               break;
           }
-        },
-        error: () => {
-          this.loginError = true;
-          setTimeout(() => (this.loginError = false), 3000);
-        },
+        }
       });
     }
   }

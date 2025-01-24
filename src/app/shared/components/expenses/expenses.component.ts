@@ -144,18 +144,7 @@ export class ExpensesComponent {
               duration: 3000,
               verticalPosition: 'bottom',
             });
-          },
-          error: (err) => {
-            console.error('Error adding note:', err);
-            this.snackBar.open(
-              'Failed to add note. Please try again.',
-              'Close',
-              {
-                duration: 3000,
-                verticalPosition: 'bottom',
-              }
-            );
-          },
+          }
         });
     }
   }

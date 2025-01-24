@@ -186,16 +186,7 @@ export class TripDetailViewComponent implements OnInit {
             });
           }
         },
-        error: (error) => {
-          this.snackBar.open(
-            'Failed to update expense. Please try again.',
-            'Close',
-            {
-              duration: 3000,
-              verticalPosition: 'bottom',
-            }
-          );
-        },
+        
       });
   }
   deleteExpense(expense: any): void {
@@ -210,16 +201,6 @@ export class TripDetailViewComponent implements OnInit {
               duration: 3000,
               verticalPosition: 'bottom',
             });
-          },
-          error: () => {
-            this.snackBar.open(
-              'Failed to delete expense. Please try again.',
-              'Close',
-              {
-                duration: 3000,
-                verticalPosition: 'bottom',
-              }
-            );
           },
         });
     }
@@ -248,18 +229,7 @@ export class TripDetailViewComponent implements OnInit {
             duration: 3000,
             verticalPosition: 'bottom',
           });
-        },
-        error: (error) => {
-          console.error('Failed to send trip for approval:', error);
-          this.snackBar.open(
-            'Failed to send trip for approval. Please try again.',
-            'Close',
-            {
-              duration: 3000,
-              verticalPosition: 'bottom',
-            }
-          );
-        },
+        }
       });
   }
 }

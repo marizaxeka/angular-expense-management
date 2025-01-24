@@ -86,17 +86,7 @@ export class FinanceViewComponent {
             duration: 3000,
             verticalPosition: 'bottom',
           });
-        },
-        error: () => {
-          this.snackBar.open(
-            'Failed to update refund status. Please try again.',
-            'Close',
-            {
-              duration: 3000,
-              verticalPosition: 'bottom',
-            }
-          );
-        },
+        }
       });
   }
 }

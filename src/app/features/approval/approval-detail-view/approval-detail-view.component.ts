@@ -126,17 +126,7 @@ export class ApprovalDetailViewComponent {
               verticalPosition: 'bottom',
             });
             this.router.navigate(['/approvals']);
-          },
-          error: () => {
-            this.snackBar.open(
-              'Failed to approve trip. Please try again.',
-              'Close',
-              {
-                duration: 3000,
-                verticalPosition: 'bottom',
-              }
-            );
-          },
+          }
         });
     }
   }
@@ -153,17 +143,7 @@ export class ApprovalDetailViewComponent {
               verticalPosition: 'bottom',
             });
             this.router.navigate(['/approvals']);
-          },
-          error: () => {
-            this.snackBar.open(
-              'Failed to reject trip. Please try again.',
-              'Close',
-              {
-                duration: 3000,
-                verticalPosition: 'bottom',
-              }
-            );
-          },
+          }
         });
     }
   }
