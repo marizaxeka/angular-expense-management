@@ -34,9 +34,14 @@ export class FinanceViewComponent {
   }
 
   private loadApprovedTrips(): void {
-    this.tripService.getApprovedTrips().subscribe(trips => {
-      this.approvedTrips = trips;
-    });
+    this.tripService
+      .getApprovedTrips()
+      .pipe(take(1))
+      .subscribe({
+        next: (trips) => {
+          this.approvedTrips = trips;
+        },
+      });
   }
 
   calculateTotal = (trip: Trip): number => {
@@ -45,18 +50,20 @@ export class FinanceViewComponent {
 
   getStatusClass = (status: string): string => {
     const statusClasses: { [key: string]: string } = {
-      IN_PROCESS: 'text-orange-500',
-      REFUNDED: 'text-green-500',
+      [RefundStatus.IN_PROCESS]: 'text-orange-500',
+      [RefundStatus.REFUNDED]: 'text-green-500',
     };
     return statusClasses[status] || '';
   };
 
   getStatusIcon = (status: string): string => {
     const statusIcons: { [key: string]: string } = {
-      IN_PROCESS: 'pending',
-      REFUNDED: 'done_all',
+      [RefundStatus.IN_PROCESS]: 'pending',
+      [RefundStatus.REFUNDED]: 'done_all',
     };
-    return statusIcons[status] || '';
+    const icon = statusIcons[status.trim()] || '';
+    console.log('Status:', status, 'Icon:', icon);
+    return icon;
   };
 
   updateStatus(event: { trip: Trip; status: RefundStatus }): void {

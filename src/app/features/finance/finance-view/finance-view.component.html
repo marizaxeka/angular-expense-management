@@ -1,12 +1,15 @@
 <div class="p-6">
-  <h1 class="text-2xl font-bold mb-6">Approved Trips</h1>
-  <app-data-table
-    [data]="approvedTrips"
-    [columns]="columns"
-    [userRole]="'FINANCE'"
-    [calculateTotalFn]="calculateTotal"
-    [getStatusClassFn]="getStatusClass"
-    [getStatusIconFn]="getStatusIcon"
-    (updateRefundStatus)="updateStatus($event)">
-  </app-data-table>
+  <div class="bg-white shadow-md rounded-lg border border-gray-200 p-6">
+    <h1 class="text-2xl text-center font-bold mb-6">Approved Trips</h1>
+    <app-data-table
+      [data]="approvedTrips"
+      [columns]="columns"
+      [userRole]="'FINANCE'"
+      [calculateTotalFn]="calculateTotal"
+      [getStatusClassFn]="getStatusClass"
+      [getStatusIconFn]="getStatusIcon"
+      (updateRefundStatus)="updateStatus($event)"
+    ></app-data-table>
+  </div>
 </div>
+

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -21,7 +21,8 @@ import { ExpensesComponent } from '../../../shared/components/expenses/expenses.
 import { UserRole } from '../../../core/enums/user-role.enum';
 import { Approval } from '../../../core/interfaces/approval.interface';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { take } from 'rxjs';
+import { map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { forkJoin, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-approval-detail-view',
@@ -41,13 +42,14 @@ import { take } from 'rxjs';
   styleUrl: './approval-detail-view.component.scss',
 })
 export class ApprovalDetailViewComponent {
+  private destroy$ = new Subject<void>();
   trip?: Trip;
   noteForm: FormGroup;
   note: any;
   TripStatus = TripStatus;
   userRole = UserRole.APPROVER;
   approval?: Approval;
-
+  
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -59,16 +61,26 @@ export class ApprovalDetailViewComponent {
     this.noteForm = this.fb.group({
       note: ['', Validators.required],
     });
+    
   }
 
+  
   ngOnInit(): void {
-    const tripId = this.route.snapshot.params['id'];
-    this.tripService.getTrip(tripId).subscribe((trip) => {
-      this.trip = trip;
-    });
-    this.approvalService.getApproval(tripId).subscribe(approval => {
-      this.approval = approval;
-    });
+    this.route.paramMap
+      .pipe(
+        takeUntil(this.destroy$),
+        map(params => params.get('id')),
+        switchMap(id =>
+          forkJoin({
+            trip: this.tripService.getTrip(id!),
+            approval: this.approvalService.getApproval(id!),
+          })
+        )
+      )
+      .subscribe(({ trip, approval }) => {
+        this.trip = trip;
+        this.approval = approval;
+      });
   }
 
   calculateTotalAmount(): number {
@@ -154,5 +166,9 @@ export class ApprovalDetailViewComponent {
           },
         });
     }
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

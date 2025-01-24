@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-trip-form',
@@ -21,7 +22,8 @@ import { take } from 'rxjs';
     MatInputModule,
     MatDatepickerModule,
     MatButtonModule,
-    MatNativeDateModule],
+    MatNativeDateModule,
+    MatCardModule],
   templateUrl: './trip-form.component.html',
   styleUrl: './trip-form.component.scss'
 })

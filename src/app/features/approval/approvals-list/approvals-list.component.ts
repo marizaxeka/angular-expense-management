@@ -4,6 +4,7 @@ import { TripService } from '../../../core/services/trip.service';
 import { Trip } from '../../../core/interfaces/trip.interface';
 import { TableColumn } from '../../../shared/components/data-table/table-config.interface.ts/table-column.interface';
 import { DataTableComponent } from '../../../shared/components/data-table/data-table/data-table.component';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-approvals-list',
@@ -45,7 +46,7 @@ export class ApprovalsListComponent {
   }
 
   private loadPendingTrips(): void {
-    this.tripService.getPendingTrips().subscribe({
+    this.tripService.getPendingTrips().pipe(take(1)).subscribe({
       next: (trips) => (this.pendingTrips = trips),
     });
   }

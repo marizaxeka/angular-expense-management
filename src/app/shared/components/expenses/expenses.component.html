@@ -1,5 +1,4 @@
 @if (currentUser$ | async; as user) {
-<mat-card>
   <div class="p-4">
     <div class="flex justify-between mb-4">
       <span class="text-xl font-bold">Expenses</span>
@@ -155,11 +154,12 @@
       </div>
     </ng-template>
   </mat-card-content>
-</mat-card>
 @if (user.role === UserRole.APPROVER) {
 <div class="mt-6">
+  <hr class="border-t border-gray-300 my-6" />
+  <span class="text-sm font-bold">Add Note:</span>
   <form [formGroup]="noteForm" (ngSubmit)="addNote()">
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <mat-form-field class="w-2/4">
         <mat-label>Note</mat-label>
         <input matInput formControlName="note" [value]="approval?.note || ''" />

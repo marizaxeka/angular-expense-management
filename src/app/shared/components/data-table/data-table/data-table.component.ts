@@ -6,10 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { StatusMap } from '../../../../core/interfaces/status-map';
 import { Trip } from '../../../../core/interfaces/trip.interface';
 import { RefundStatus } from '../../../../core/enums/refund-status.enum';
-import { TableAction } from '../table-config.interface.ts/table-action.interface';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { TripStatus } from '../../../../core/enums/trip-status.enum';
 

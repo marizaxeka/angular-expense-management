@@ -1,3 +1,5 @@
+<div class="p-2 bg-gray-100 min-h-screen">
+  <div class="max-w-5xl mx-auto bg-white rounded-lg shadow-md p-2">
 <div class="p-6" *ngIf="trip">
   <div class="flex justify-between items-center mb-6">
     <div>
@@ -21,6 +23,7 @@
       </button>
     </div>
   </div>
+  <hr class="border-t border-gray-300 my-6" />
   <app-expenses
     [expenses]="trip.expenses"
     [userRole]="userRole"
@@ -28,4 +31,6 @@
     [isPending]="true"
     >
   </app-expenses>
+</div>
+</div>
 </div>

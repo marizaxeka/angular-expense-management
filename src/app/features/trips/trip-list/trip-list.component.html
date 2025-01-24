@@ -1,16 +1,20 @@
 <div class="p-6">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">My Trips</h1>
-    <button mat-raised-button color="primary" routerLink="new">
-      <mat-icon>add</mat-icon> New Trip
-    </button>
+  <div class="bg-white shadow-md rounded-lg border border-gray-200 p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-center w-full">My Trips</h1>
+      <button mat-raised-button color="primary" routerLink="new"
+       class="ml-auto flex items-center justify-center space-x-2 px-6 py-2 w-32 text-sm font-medium"
+      >
+        <mat-icon>add</mat-icon> New 
+      </button>
+    </div>
+    <app-data-table
+      [data]="trips"
+      [columns]="columns"
+      [userRole]="'END_USER'"
+      (sendForApproval)="sendForApproval($event)"
+      (view)="viewDetails($event)"
+      [getStatusClass]="getStatusClass"
+    ></app-data-table>
   </div>
-  <app-data-table 
-    [data]="trips"
-    [columns]="columns"
-    [userRole]="'END_USER'"
-    (sendForApproval)="sendForApproval($event)"
-    (view)="viewDetails($event)"
-    [getStatusClass]="getStatusClass"
-  ></app-data-table>
 </div>

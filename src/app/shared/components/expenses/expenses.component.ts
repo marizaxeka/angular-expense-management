@@ -25,6 +25,8 @@ import { Approval } from '../../../core/interfaces/approval.interface';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { take } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expenses',
@@ -71,8 +73,12 @@ export class ExpensesComponent {
     this.noteForm = this.fb.group({
       note: [''],
     });
-    this.approvalService
-      .getApproval(this.route.snapshot.params['id'])
+    this.route.paramMap
+      .pipe(
+        takeUntilDestroyed(),
+        map((params) => params.get('id')),
+        switchMap((id) => this.approvalService.getApproval(id!))
+      )
       .subscribe((approval) => {
         if (approval?.note) {
           this.noteForm.patchValue({ note: approval.note });

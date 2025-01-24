@@ -85,7 +85,7 @@ export class TripListComponent {
   }
 
   private loadTrips(): void {
-    this.tripService.getTrips().subscribe({
+    this.tripService.getTrips().pipe(take(1)).subscribe({
       next: (trips) => {
         this.trips = trips;
       },
