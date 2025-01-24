@@ -78,4 +78,7 @@ export class TripFormComponent {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
+  cancel(){
+    this.tripForm.reset()
+  }
 }

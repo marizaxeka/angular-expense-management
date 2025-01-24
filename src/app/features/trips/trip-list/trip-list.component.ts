@@ -9,6 +9,7 @@ import { MatSnackBar,  } from '@angular/material/snack-bar';
 import { DataTableComponent } from '../../../shared/components/data-table/data-table/data-table.component';
 import { TableColumn } from '../../../shared/components/data-table/table-config.interface.ts/table-column.interface';
 import { take } from 'rxjs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-trip-list',
@@ -18,6 +19,7 @@ import { take } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     DataTableComponent,
+    MatTooltipModule
   ],
   templateUrl: './trip-list.component.html',
   styleUrl: './trip-list.component.scss',
