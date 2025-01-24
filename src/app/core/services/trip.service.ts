@@ -1,16 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { Expense, Trip } from '../interfaces/trip.interface';
 import { TripStatus } from '../enums/trip-status.enum';
 import { MOCK_TRIPS } from '../../shared/mock-data/trips.mock';
+import { RefundStatus } from '../enums/refund-status.enum';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TripService {
-  private trips: Trip[] = MOCK_TRIPS;
+  private readonly STORAGE_KEY = 'trips';
+  private trips: Trip[] = [];
+  private storageSub = new Subject<void>();
+  private bc = new BroadcastChannel('test_channel');
+  constructor() {
+    this.loadTrips();
+    this.bc.onmessage = (ev) => {
+      this.getTrips();
+    };
+  }
 
-  constructor() {}
+  watchStorage(): Observable<any> {
+    return this.storageSub.asObservable();
+  }
+
+  private loadTrips(): void {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    this.trips = stored ? JSON.parse(stored) : MOCK_TRIPS;
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.trips));
+  }
+
+  private saveTrips(): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.trips));
+  }
 
   getTrips(): Observable<Trip[]> {
     return of(this.trips);
@@ -26,8 +48,10 @@ export class TripService {
       id: Date.now().toString(),
       expenses: [],
     };
-
     this.trips.push(newTrip);
+    this.saveTrips();
+    this.bc.postMessage('This is a test message.');
+
     return of(newTrip);
   }
 
@@ -36,11 +60,12 @@ export class TripService {
     expenseData: Omit<Expense, 'id' | 'tripId'>
   ): Observable<Trip> {
     const tripIndex = this.trips.findIndex((t) => t.id === tripId);
-    if (tripIndex === -1) throw new Error('Trip not found');
+    if (tripIndex === -1) return throwError(() => new Error('Trip not found'));
+
     const trip = this.trips[tripIndex];
     if (trip.status !== TripStatus.DRAFT) {
-      throw new Error(
-        'Cannot add expenses to a trip that is not in DRAFT status'
+      return throwError(
+        () => new Error('Cannot add expenses to a non-draft trip')
       );
     }
 
@@ -54,7 +79,7 @@ export class TripService {
       ...trip,
       expenses: [...trip.expenses, newExpense],
     };
-
+    this.saveTrips();
     return of(this.trips[tripIndex]);
   }
 
@@ -64,12 +89,12 @@ export class TripService {
     updates: Partial<Omit<Expense, 'id' | 'tripId' | 'type'>>
   ): Observable<Trip> {
     const tripIndex = this.trips.findIndex((t) => t.id === tripId);
-    if (tripIndex === -1) throw new Error('Trip not found');
+    if (tripIndex === -1) return throwError(() => new Error('Trip not found'));
 
     const trip = this.trips[tripIndex];
     if (trip.status !== TripStatus.DRAFT) {
-      throw new Error(
-        'Cannot update expenses of a trip that is not in DRAFT status'
+      return throwError(
+        () => new Error('Cannot update expenses of a non-draft trip')
       );
     }
 
@@ -83,40 +108,38 @@ export class TripService {
       ...trip,
       expenses: updatedExpenses,
     };
-
+    this.saveTrips();
     return of(this.trips[tripIndex]);
   }
+
   deleteExpense(tripId: string, expenseId: string): Observable<Trip> {
     const tripIndex = this.trips.findIndex((t) => t.id === tripId);
-    if (tripIndex === -1) throw new Error('Trip not found');
+    if (tripIndex === -1) return throwError(() => new Error('Trip not found'));
 
     const trip = this.trips[tripIndex];
     if (trip.status !== TripStatus.DRAFT) {
-      throw new Error(
-        'Cannot delete expenses from a trip that is not in DRAFT status'
+      return throwError(
+        () => new Error('Cannot delete expenses from a non-draft trip')
       );
     }
 
-    const updatedExpenses = trip.expenses.filter(
-      (expense) => expense.id !== expenseId
-    );
     this.trips[tripIndex] = {
       ...trip,
-      expenses: updatedExpenses,
+      expenses: trip.expenses.filter((e) => e.id !== expenseId),
     };
-
+    this.saveTrips();
     return of(this.trips[tripIndex]);
   }
 
   updateTripStatus(id: string, status: TripStatus): Observable<Trip> {
     const tripIndex = this.trips.findIndex((trip) => trip.id === id);
-    if (tripIndex === -1) throw new Error('Trip not found');
+    if (tripIndex === -1) return throwError(() => new Error('Trip not found'));
 
     this.trips[tripIndex] = {
       ...this.trips[tripIndex],
       status,
     };
-
+    this.saveTrips();
     return of(this.trips[tripIndex]);
   }
 
@@ -126,5 +149,18 @@ export class TripService {
 
   getApprovedTrips(): Observable<Trip[]> {
     return of(this.trips.filter((trip) => trip.status === TripStatus.APPROVED));
+  }
+
+  updateRefundStatus(tripId: string, status: RefundStatus): Observable<Trip> {
+    const tripIndex = this.trips.findIndex((t) => t.id === tripId);
+    if (tripIndex === -1) return throwError(() => new Error('Trip not found'));
+
+    this.trips[tripIndex] = {
+      ...this.trips[tripIndex],
+      refundStatus: status,
+      lastUpdated: new Date(),
+    };
+    this.saveTrips();
+    return of(this.trips[tripIndex]);
   }
 }

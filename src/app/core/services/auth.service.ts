@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable, of, throwError } from 'rxjs';
 import { User } from '../interfaces/user.interface';
 import { UserRole } from '../enums/user-role.enum';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,15 @@ import { UserRole } from '../enums/user-role.enum';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
+
+  get currentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+  set currentUser(user: User | null) {
+    this.currentUserSubject.next(user);
+  }
+
   private mockUsers: User[] = [
     {
       id: '1',
@@ -32,7 +42,8 @@ export class AuthService {
       name: 'Mike Johnson',
     },
   ];
-  constructor() {
+
+  constructor(private router: Router) {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
@@ -54,5 +65,6 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
+    this.router.navigate(['']);
   }
 }
