@@ -5,6 +5,8 @@ import { TripStatus } from '../enums/trip-status.enum';
 import { MOCK_TRIPS } from '../../shared/mock-data/trips.mock';
 import { RefundStatus } from '../enums/refund-status.enum';
 
+export const bc = new BroadcastChannel('demo');
+
 @Injectable({
   providedIn: 'root',
 })
@@ -12,21 +14,17 @@ export class TripService {
   private readonly STORAGE_KEY = 'trips';
   private trips: Trip[] = [];
   private storageSub = new Subject<void>();
-  private bc = new BroadcastChannel('test_channel');
   constructor() {
     this.loadTrips();
-    this.bc.onmessage = (ev) => {
-      this.getTrips();
-    };
   }
 
   watchStorage(): Observable<any> {
     return this.storageSub.asObservable();
   }
 
-  private loadTrips(): void {
+  public loadTrips(): void {
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    this.trips = stored ? JSON.parse(stored) : MOCK_TRIPS;
+    this.trips = stored ? [...JSON.parse(stored)] : MOCK_TRIPS;
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.trips));
   }
 
@@ -50,7 +48,7 @@ export class TripService {
     };
     this.trips.push(newTrip);
     this.saveTrips();
-    this.bc.postMessage('This is a test message.');
+    bc.postMessage('createTrip');
 
     return of(newTrip);
   }

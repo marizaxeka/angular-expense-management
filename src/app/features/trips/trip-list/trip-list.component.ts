@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { Trip } from '../../../core/interfaces/trip.interface';
-import { TripService } from '../../../core/services/trip.service';
+import { bc, TripService } from '../../../core/services/trip.service';
 import { TripStatus } from '../../../core/enums/trip-status.enum';
 import { MatSnackBar,  } from '@angular/material/snack-bar';
 import { DataTableComponent } from '../../../shared/components/data-table/data-table/data-table.component';
@@ -76,7 +76,15 @@ export class TripListComponent {
     private tripService: TripService,
     private snackBar: MatSnackBar,
     private router: Router
-  ) {}
+  ) {
+
+    bc.onmessage = (ev)=>{
+      if(ev.data ==='createTrip'){;
+        this.tripService.loadTrips();
+        this.loadTrips();
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.loadTrips();
@@ -87,7 +95,7 @@ export class TripListComponent {
   }
 
   private loadTrips(): void {
-    this.tripService.getTrips().pipe(take(1)).subscribe({
+    this.tripService.getTrips().subscribe({
       next: (trips) => {
         this.trips = trips;
       },
